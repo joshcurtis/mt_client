@@ -1,10 +1,9 @@
 {
-  "name": "mt_ping",
+  "name": "mt_js_examples",
   "version": "1.0.0",
   "description": "",
-  "main": "hello.js",
+  "main": "ping.js",
   "dependencies": {
-    "machinetalk": "^1.2.0",
     "machinetalk-protobuf": "^1.0.1",
     "zmq": "^2.14.0"
   },
