@@ -14,8 +14,8 @@ var trim = function(msg) {
     return msg
 }
 
-launcher_port = '64811'
-launchercmd_port = '53457'
+launcher_port = '62285'
+launchercmd_port = '50298'
 var started = false
 
 // Create sub socket
@@ -25,23 +25,30 @@ socket_sub.connect("tcp://134.197.40.182:" + launcher_port)
 
 var dealer = zmq.socket('dealer')
 dealer.identity = 'joshs-mac'
-dealer.connect("tcp://137.197.40.182:" + launchercmd_port)
+dealer.connect("tcp://134.197.40.182:" + launchercmd_port)
 
 socket_sub.on('message', function(topic, msg) {
     var ping = {
 	type: mt.message.ContainerType.MT_PING
     }
+    var ping_buf = mt.message.Container.encode(ping)
+    ping_buf = ping_buf.buffer.slice(0, msg.ping_buf)
+    dealer.send(ping_buf)
 
-    var start = {
-	type: mt.message.ContainerType.MT_LAUNCHER_START,
-	index: msg["index"]
-    }
 
-    dealer.send(mt.message.Container.encode(ping))
     if( !started ) {
-	dealer.send(mt.message.Container.encode(start))
+	var start = {
+	    type: mt.message.ContainerType.MT_LAUNCHER_START,
+	    index: msg["index"]
+	}
+
+	var start_buf = mt.message.Container.encode(start)
+	start_buf = start_buf.buffer.slice(0, start.limit)
+	dealer.send(start_buf)
 	started = true
     }
+
+    console.log(msg)
 })
 
 dealer.on('message', function(msg) {
